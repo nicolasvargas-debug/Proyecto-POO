@@ -49,7 +49,9 @@ public class Usuario extends Persona{
 		if (prestamos.getTamanio()>= MAX_PRESTAMOS) {
 			throw new IllegalStateException("El usuario ya alcanzo el maximo de prestamos");
 		}
-		if (buscarPrestamo(p.getLibro()) != null)
+		if (buscarPrestamo(p.getLibro()) != null) {
+			throw new IllegalStateException("El usuario ya tiene este libro");
+		}
 		return prestamos.agregar(p);
 		
 	}

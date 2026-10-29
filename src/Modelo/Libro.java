@@ -4,6 +4,7 @@ public class Libro {
 	private String isbn;
 	private String nombre;
 	private String autor;
+	private Cola<Usuario> reservas;
 	private int	copiasTotales;
 	private int copiasDisponibles;
 	
@@ -14,7 +15,9 @@ public class Libro {
 		setAutor(autor);
 		setCopiasTotales(copiasTotales);
 		setCopiasDisponibles(copiasTotales);
+		reservas = new Cola<Usuario>();
 		verificarInvariante();
+		
 	}
 
 	public String getIsbn() {
@@ -101,6 +104,25 @@ public class Libro {
 		setCopiasDisponibles(cambio);
 		verificarInvariante();
 		
+	}
+	public boolean tieneReserva(){
+		return !reservas.estaVacia();
+	}
+		
+	
+	public boolean agregarReservas(Usuario u) {
+		if (u == null) {
+			throw new IllegalArgumentException("El usuario no puede se nulo");
+		}
+		else if (copiasDisponibles == 0) {
+			reservas.add(u);
+			return true;
+		}
+			throw new IllegalArgumentException("Todavia hay copias disponibles");
+		
+	}
+	public Usuario siguienteReserva() {
+		return reservas.poll();
 	}
 
 	private void verificarInvariante()
