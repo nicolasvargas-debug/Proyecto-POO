@@ -39,24 +39,28 @@ public class Usuario extends Persona{
 	}
 	
 	public boolean agregarPrestamo(Prestamo p) {
+		if (p == null) {
+			throw new IllegalStateException("El prestamo no puede ser nulo");
+		}
+		
 		if (bloqueado) {
 			throw new IllegalStateException("El usuario esta bloqueado");
 		}
 		if (prestamos.getTamanio()>= MAX_PRESTAMOS) {
 			throw new IllegalStateException("El usuario ya alcanzo el maximo de prestamos");
 		}
+		if (buscarPrestamo(p.getLibro()) != null)
 		return prestamos.agregar(p);
-		
 		
 	}
 	
-	public Prestamo buscarprestamo(Libro l) {
+	public Prestamo buscarPrestamo(Libro l) {
 		Nodo<Prestamo> actual = prestamos.getInicio();
 		while (actual != null) {
 			if (actual.getContenido().getLibro() == l) {
 				return actual.getContenido();
 			}
-			actual.getSiguiente();
+			actual = actual.getSiguiente();
 		}
 		return null;
 		
