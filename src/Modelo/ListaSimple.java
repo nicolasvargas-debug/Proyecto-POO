@@ -16,35 +16,50 @@ public class ListaSimple<T> {
 
 
 	public boolean agregar(T contenido) {
-
 		Nodo<T> nuevoNodo = new Nodo<>(contenido);
-		if (estaVacia()) {
-			inicio = nuevoNodo;
-		} else {
-			Nodo<T> actual = inicio;
-			while (actual.getSiguiente() != null) {
-				actual = actual.getSiguiente();
-			}
-			actual.setSiguiente(nuevoNodo);
-		}
+		nuevoNodo.setSiguiente(inicio);
+		inicio = nuevoNodo;
 		tamanio++;
 		return true; 
 	}
-
+	
+	public boolean eliminar(T contenido) {
+		if (estaVacia()) {
+			throw new IllegalArgumentException("La lista esta vacia");
+		}
+		else if (inicio.getContenido() == contenido){
+			 Nodo<T> siguiente = inicio.getSiguiente();
+			 inicio.setSiguiente(null);
+			 inicio = siguiente;
+			 tamanio --;
+			 return true;
+		}
+		else {
+			Nodo<T> anterior = inicio;
+			Nodo<T> actual = anterior.getSiguiente();
+			while (actual != null) {
+				if (anterior.getContenido() == contenido) {
+					Nodo<T> siguiente = actual.getSiguiente();
+					anterior.setSiguiente(siguiente);
+					tamanio --;
+					return true;
+				}
+				anterior = actual;
+				actual = actual.getSiguiente();
+			
+			}		
+		}
+		return false;
+	}
+	
+	
 	public Nodo<T> getInicio() {
 		return inicio;
-	}
-
-	public void setInicio(Nodo<T> inicio) {
-		this.inicio = inicio;
 	}
 
 	public int getTamanio() {
 		return tamanio;
 	}
 
-	public void setTamanio(int tamanio) {
-		this.tamanio = tamanio;
-	}
 
 }
