@@ -3,6 +3,7 @@ package Modelo;
 public class Usuario extends Persona{
 	private ListaSimple<Libro> prestamos; 
 	private boolean bloqueado;
+	private static final int MAX_PRESTAMOS = 3;
 	public static final String ROL_USUARIO = "usuario";
 	
 	public Usuario(String nombre, String apellido, String usuario, String contrasena,int codigo) {
@@ -39,9 +40,15 @@ public class Usuario extends Persona{
 	
 	public boolean agregarPrestamo(Libro libro) {
 		if (bloqueado) {
-			throw new IllegalStateException("El ususario esta bloqueado");
+			throw new IllegalStateException("El usuario esta bloqueado");
 		}
+		if (prestamos.getTamanio()>= MAX_PRESTAMOS) {
+			throw new IllegalStateException("El usuario ya alcanzo el maximo de prestamos");
+		}
+		
 		return prestamos.agregar(libro);
+		
+		
 	}
 	
 	public ListaSimple<Libro> getPretamos(){

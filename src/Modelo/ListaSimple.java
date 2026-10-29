@@ -3,7 +3,7 @@ package Modelo;
 public class ListaSimple<T> {
 	private Nodo<T> inicio;
 	private int tamanio;
-	private static final int MAX_PRESTAMOS = 3;
+	
 
 	public ListaSimple() {
 		this.inicio = null;
@@ -16,10 +16,6 @@ public class ListaSimple<T> {
 
 
 	public boolean agregar(T contenido) {
-		if (tamanio >= MAX_PRESTAMOS) {
-			System.out.println("Error: Se ha alcanzado el límite máximo de 3 préstamos.");
-			return false; 
-		}
 
 		Nodo<T> nuevoNodo = new Nodo<>(contenido);
 		if (estaVacia()) {
