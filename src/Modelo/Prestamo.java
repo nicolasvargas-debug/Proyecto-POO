@@ -65,7 +65,11 @@ public class Prestamo {
 	
 	public boolean renovar() {
 		if (renovado) {
-			return false;
+			throw new IllegalStateException("El prestamo ya fue renovado");
+		}
+		else if (libro.tieneReserva()) {
+			throw new IllegalStateException("El libro tiene reservas, no se puede renovar");
+			
 		}
 		else {
 			renovado = true;
