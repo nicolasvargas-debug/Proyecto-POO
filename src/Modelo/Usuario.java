@@ -1,7 +1,7 @@
 package Modelo;
 
 public class Usuario extends Persona{
-	private ListaSimple<Libro> prestamos; 
+	private ListaSimple<Prestamo> prestamos; 
 	private boolean bloqueado;
 	private static final int MAX_PRESTAMOS = 3;
 	public static final String ROL_USUARIO = "usuario";
@@ -38,20 +38,31 @@ public class Usuario extends Persona{
 		return false;
 	}
 	
-	public boolean agregarPrestamo(Libro libro) {
+	public boolean agregarPrestamo(Prestamo p) {
 		if (bloqueado) {
 			throw new IllegalStateException("El usuario esta bloqueado");
 		}
 		if (prestamos.getTamanio()>= MAX_PRESTAMOS) {
 			throw new IllegalStateException("El usuario ya alcanzo el maximo de prestamos");
 		}
-		
-		return prestamos.agregar(libro);
+		return prestamos.agregar(p);
 		
 		
 	}
 	
-	public ListaSimple<Libro> getPretamos(){
+	public Prestamo buscarprestamo(Libro l) {
+		Nodo<Prestamo> actual = prestamos.getInicio();
+		while (actual != null) {
+			if (actual.getContenido().getLibro() == l) {
+				return actual.getContenido();
+			}
+			actual.getSiguiente();
+		}
+		return null;
+		
+	}
+	
+	public ListaSimple<Prestamo> getPretamos(){
 		return prestamos;
 	}
 	

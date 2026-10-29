@@ -25,7 +25,7 @@ public class ListaSimple<T> {
 	
 	public boolean eliminar(T contenido) {
 		if (estaVacia()) {
-			throw new IllegalArgumentException("La lista esta vacia");
+			return false;
 		}
 		else if (inicio.getContenido() == contenido){
 			 Nodo<T> siguiente = inicio.getSiguiente();
@@ -38,7 +38,7 @@ public class ListaSimple<T> {
 			Nodo<T> anterior = inicio;
 			Nodo<T> actual = anterior.getSiguiente();
 			while (actual != null) {
-				if (anterior.getContenido() == contenido) {
+				if (actual.getContenido() == contenido) {
 					Nodo<T> siguiente = actual.getSiguiente();
 					anterior.setSiguiente(siguiente);
 					tamanio --;
@@ -51,6 +51,7 @@ public class ListaSimple<T> {
 		}
 		return false;
 	}
+	
 	
 	
 	public Nodo<T> getInicio() {
