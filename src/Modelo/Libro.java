@@ -112,7 +112,7 @@ public class Libro {
 	
 	public boolean agregarReservas(Usuario u) {
 		if (u == null) {
-			throw new IllegalArgumentException("El usuario no puede se nulo");
+			throw new IllegalArgumentException("El usuario no puede ser nulo");
 		}
 		else if (copiasDisponibles == 0) {
 			reservas.add(u);
