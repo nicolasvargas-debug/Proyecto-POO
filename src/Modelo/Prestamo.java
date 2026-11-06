@@ -10,14 +10,18 @@ public class Prestamo {
 	private static final int DIAS_PRESTAMO = 7;
 	
 	
+	//para uno nuevo
+	public Prestamo(Libro libro, Usuario usuario) { 
+		this(libro, usuario, false, LocalDate.now());
+	}
 	
-	
-	public Prestamo(Libro libro, Usuario usuario) {
+	//para cargar uno ya existente
+	public Prestamo(Libro libro, Usuario usuario, boolean renovado, LocalDate fechaInicio) {
 		setLibro(libro);
 		setUsuario(usuario);
 		
-		this.fechaInicio = LocalDate.now();
-		this.renovado = false;
+		this.fechaInicio = fechaInicio;
+		this.renovado = renovado;
 		
 		verificarInvariante();	
 		}

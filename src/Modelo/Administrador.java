@@ -4,8 +4,8 @@ public class Administrador extends Persona {
 	private String cargo;
 	public static final String ROL_ADMINISTRADOR = "administrador";
 	
-	public Administrador(String nombre, String apellido, String usuario, String contrasena, int codigo,  String cargo) {
-		super(nombre, apellido, usuario, contrasena, codigo);
+	public Administrador(String nombre, String apellido, String usuario, String contrasena, boolean yaEsHash, String cargo) {
+		super(nombre, apellido, usuario, contrasena, yaEsHash);
 		setCargo(cargo);
 		verificarInvariante();
 	}
@@ -18,7 +18,7 @@ public class Administrador extends Persona {
 
 
 
-	public void setCargo(String cargo) {
+	private void setCargo(String cargo) {
 		if (cargo != null && !cargo.strip().isEmpty()) {
 			this.cargo = cargo;
 		}

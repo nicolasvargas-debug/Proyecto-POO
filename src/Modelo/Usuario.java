@@ -6,10 +6,10 @@ public class Usuario extends Persona{
 	private static final int MAX_PRESTAMOS = 3;
 	public static final String ROL_USUARIO = "usuario";
 	
-	public Usuario(String nombre, String apellido, String usuario, String contrasena,int codigo) {
-		super(nombre, apellido, usuario, contrasena, codigo );
+	public Usuario(String nombre, String apellido, String usuario, String contrasena,boolean yaEsHash, boolean bloqueado) {
+		super(nombre, apellido, usuario, contrasena,yaEsHash);
 		this.prestamos = new ListaSimple<>();
-		this.bloqueado = false;
+		this.bloqueado = bloqueado;
 		
 	}
 

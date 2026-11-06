@@ -1,5 +1,8 @@
 package Modelo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ArbolBinario {
 	private NodoArbol raiz;
 	private int tamanio;
@@ -20,7 +23,7 @@ public class ArbolBinario {
 	}
 
 
-	public void guardarLibro(Libro libro) {
+	public void insertarLibro(Libro libro) {
 		if (libro == null) {
 			throw new IllegalArgumentException("El libro no puede ser nulo");
 		}
@@ -129,6 +132,22 @@ public class ArbolBinario {
 		buscado.setAutor(autor);
 		buscado.setNombre(nombre);
 		return buscado;
+	}
+	
+	public List<Libro> obtenerLibros(){
+		List<Libro> lista = new ArrayList<>() ;
+		preOrden(raiz, lista);
+		return lista;
+	}
+	
+	private void preOrden(NodoArbol actual, List<Libro> libros) {
+		if (actual != null) {
+			libros.add(actual.getContenido());
+			preOrden(actual.getIzquierdo(), libros);
+			preOrden(actual.getDerecho(), libros);;
+		}
+		
+		
 	}
 
 }

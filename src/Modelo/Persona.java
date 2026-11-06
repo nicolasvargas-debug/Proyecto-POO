@@ -1,20 +1,26 @@
 package Modelo;
 
-
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.util.Base64;
 
 public abstract class Persona  {
 	private String nombre;
 	private String apellido;
 	private String usuario;
 	private String contrasena;
-	private int codigo;
+	private boolean yaEsHash;
+
 	
-	public Persona(String nombre, String apellido, String usuario, String contrasena, int codigo) {
+	public Persona(String nombre, String apellido, String usuario, String contrasena, boolean yaEsHash) {
+		this.yaEsHash = false;
 		setNombre(nombre);
 		setApellido(apellido);
 		setUsuario(usuario);
-		setContrasena(contrasena);
-		setCodigo(codigo);
+		setContrasena(contrasena,yaEsHash);
+
 		verificarInvariante();
 	}
 	
@@ -70,11 +76,11 @@ public abstract class Persona  {
 
 
 
-	public boolean compararContrasena(String contrasena) {
-		if (contrasena == null) {
+	public boolean compararContrasena(String contrasenaIngresada) {
+		if (contrasenaIngresada == null || contrasenaIngresada.strip().isEmpty()) {
 			return false;
 		}
-		else if (contrasena.equals(this.contrasena)) {
+		else if (contrasena.equals(conversorHash(contrasenaIngresada))) {
 			return true;
 		}
 		return false;
@@ -83,9 +89,16 @@ public abstract class Persona  {
 
 
 
-	private void setContrasena(String contrasena) {
+	private void setContrasena(String contrasena, boolean esHash) {
 		if (contrasena != null && !contrasena.strip().isEmpty()) {
-			this.contrasena = contrasena;
+			if (esHash) {
+				this.contrasena = contrasena;
+			}
+			else {
+				this.contrasena = conversorHash(contrasena);
+				yaEsHash = false;
+			}
+			
 		}
 		else {
 			throw new IllegalArgumentException("Contraseña invalida");
@@ -94,20 +107,7 @@ public abstract class Persona  {
 	
 	
 	
-	public int getCodigo() {
-		return codigo;
-	}
-
-
-
-	private void setCodigo(int codigo) {
-		if (codigo >0 ) {
-			this.codigo = codigo;
-		}
-		else {
-			throw new IllegalArgumentException("Codigo invalido: "+ codigo);
-		}
-	}
+	
 	
 
 
@@ -117,10 +117,25 @@ public abstract class Persona  {
 		assert apellido!= null && !apellido.strip().isEmpty(): "El apellido no debe estar vacio";
 		assert usuario != null && !usuario.strip().isEmpty(): "El usuario no debe estar vacio";
 		assert contrasena != null && !contrasena.strip().isEmpty(): "La contraseña no debe estar vacia";
-		assert codigo > 0 : "El codigo debe ser amyor que 0";
+		
 	}
 
-
+	public static String conversorHash(String texto){
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			byte[] bytes = texto.getBytes(StandardCharsets.UTF_8);
+			byte[] resultado = md.digest(bytes);
+			return Base64.getEncoder().encodeToString(resultado);
+		}
+		catch (NoSuchAlgorithmException e) {
+			throw new IllegalStateException("Error con la creacion del hash");}
+		}
+		
+	
+	public String getContrasenaHash() {
+		return contrasena;
+	}
+	
 	public abstract String getRol(); 
 	
 }

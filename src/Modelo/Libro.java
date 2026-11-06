@@ -1,12 +1,15 @@
 package Modelo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Libro {
 	private String isbn;
 	private String nombre;
 	private String autor;
 	private Cola<Usuario> reservas;
 	private int	copiasTotales;
-	private int copiasDisponibles;
+	private int cantidadPrestamos;
 	
 	
 	public Libro(String isbn, String nombre, String autor, int copiasTotales) {
@@ -14,12 +17,13 @@ public class Libro {
 		setNombre(nombre);
 		setAutor(autor);
 		setCopiasTotales(copiasTotales);
-		setCopiasDisponibles(copiasTotales);
 		reservas = new Cola<Usuario>();
+		setCantidadPrestamos(0);
 		verificarInvariante();
 		
+		
 	}
-
+ 
 	public String getIsbn() {
 		return isbn;
 	}
@@ -56,12 +60,22 @@ public class Libro {
 	public int getCopiasTotales() {
 		return copiasTotales;
 	}
-
+	private void setCantidadPrestamos(int cantidadPrestamos) {
+		if (cantidadPrestamos <= copiasTotales  && cantidadPrestamos >= 0) {
+			this.cantidadPrestamos = cantidadPrestamos;
+		}
+		else {
+			throw new IllegalArgumentException("La cantidad de prestamos esta mal");
+		}
+	}
+	
+	public int getCantidadPrestamos () {
+		return cantidadPrestamos;
+	}
+	
 	public void setCopiasTotales(int copiasTotales) {
-		int adicionarDisponible = copiasTotales - getCopiasTotales();
-		if (copiasTotales > 0 &&  getCopiasDisponibles() + adicionarDisponible >= 0) {
+		if (copiasTotales > 0 &&   copiasTotales >= getCantidadPrestamos()) {
 			this.copiasTotales = copiasTotales;
-			setCopiasDisponibles(getCopiasDisponibles()+ adicionarDisponible);//para aumentar ó reducir las disponibles al mismo tiempo
 			
 		}
 		else {
@@ -69,20 +83,20 @@ public class Libro {
 		}
 		
 	}
-	 public int getCopiasDisponibles() {
-		 return copiasDisponibles;
-	 }
-	
-	private void setCopiasDisponibles(int copiasDisponibles) {
-		if (  copiasTotales >= copiasDisponibles && copiasDisponibles >= 0 ) {
-			this.copiasDisponibles = copiasDisponibles;
+	public int getCopiasDisponibles() {
+		 if (  getCopiasTotales() >= getCantidadPrestamos() && getCantidadPrestamos() >= 0 ) {
+				return getCopiasTotales() - getCantidadPrestamos();
+				
+			}
+			else {
+				throw new IllegalArgumentException("Copias Disponibles invalidas" );
+			}
 			
 		}
-		else {
-			throw new IllegalArgumentException("Copias Disponibles invalidas: "  + copiasDisponibles);
-		}
-		
-	}
+	
+	
+	
+	
 
 	private void setIsbn(String isbn) {
 		if (isbn == null || isbn.strip().isEmpty()) {
@@ -94,14 +108,12 @@ public class Libro {
 	}
 	
 	public void prestarLibro() {
-		int cambio = getCopiasDisponibles() -1;
-		setCopiasDisponibles(cambio);
+		setCantidadPrestamos(getCantidadPrestamos() + 1);
 		verificarInvariante();
 	}
 	
 	public void devolverLibro() {
-		int cambio = getCopiasDisponibles() +1 ;
-		setCopiasDisponibles(cambio);
+		setCantidadPrestamos(getCantidadPrestamos() - 1);
 		verificarInvariante();
 		
 	}
@@ -114,7 +126,7 @@ public class Libro {
 		if (u == null) {
 			throw new IllegalArgumentException("El usuario no puede ser nulo");
 		}
-		else if (copiasDisponibles == 0) {
+		else if (cantidadPrestamos == copiasTotales) {
 			reservas.add(u);
 			return true;
 		}
@@ -124,16 +136,26 @@ public class Libro {
 	public Usuario siguienteReserva() {
 		return reservas.poll();
 	}
+	
+	public List<Usuario> listarReservas(){
+		List<Usuario> lista = new ArrayList<Usuario>();
+		Nodo<Usuario> actual = reservas.getInicio();
+		while (actual != null) {
+			lista.add(actual.getContenido());
+			actual = actual.getSiguiente();
+		}
+		return lista;
+	}
+	
 
 	private void verificarInvariante()
 	{
 		assert nombre != null && !nombre.trim().isEmpty() : "El nombre no puede ser nulo ni estar vacio";
 		assert copiasTotales > 0  : "Las copias totales no pueden ser menores que 0";
-		assert copiasDisponibles >= 0: "Las copias disponibles no pueden ser menores que 0";
-		assert copiasTotales >= copiasDisponibles  : "Las copias totales no pueden ser menores que las copias disponibles";
+		assert copiasTotales >= cantidadPrestamos : "Las copias totales no pueden ser menores que las copias disponibles";
 		assert isbn != null && !isbn.trim().isEmpty() : "El codigo Isbn no puede ser nulo ni estar vacio";
 		assert autor != null && !autor.strip().isEmpty(): "El autor no puede ser nulo ni estar vacio"; 
-		
+		assert cantidadPrestamos <= copiasTotales: "La cantidad d epretsamod debe ser menor o igual que las copias totales";
 }
 }
 

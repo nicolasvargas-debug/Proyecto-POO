@@ -50,5 +50,9 @@ public class Cola<T>{
 		}
 		return inicio.getContenido();
 	}
+	
+	public Nodo<T> getInicio() {
+		return inicio;
+	}
 
 }
