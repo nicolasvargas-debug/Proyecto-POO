@@ -104,9 +104,9 @@ public class Biblioteca {
 	}
 	
 	
-	public Persona validarLogin(String usuario, String contrasena){
-		int resultadoAdministradores = buscarBinario(gestor.getAdministradores(), usuario);
-		int resultadoUsuarios = buscarBinario(gestor.getUsuarios(), usuario);
+	public Persona validarLogin(String nombreUsuario, String contrasena){
+		int resultadoAdministradores = buscarBinario(gestor.getAdministradores(), nombreUsuario);
+		int resultadoUsuarios = buscarBinario(gestor.getUsuarios(), nombreUsuario);
 		 if (resultadoAdministradores != -1) {
 			 Administrador adminstrador = gestor.getAdministradores().get(resultadoAdministradores);
 			 if (adminstrador.compararContrasena(contrasena)) {
@@ -131,8 +131,30 @@ public class Biblioteca {
 		 }
 	}
 	
-	public prestarLibro() {
-		
+	public void prestarLibro(String isbn, String nombreUsuario) {
+		Libro libro = libros.buscarLibro(isbn); 
+		if ( libro != null) {
+			int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+			if (resultadoUsuario != -1) {
+				Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+				Prestamo prestamo = new Prestamo(libro, usuario);
+				if (libro.getCopiasDisponibles() > 0) {
+					usuario.agregarPrestamo(prestamo);
+					libro.prestarLibro();
+					gestor.guardarPrestamos();
+				}
+				else {
+					throw new IllegalArgumentException("El libro no tiene copias disponibles");
+				}
+				
+			}
+			else {
+				throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
+			}
+		}
+		else {
+			throw new IllegalArgumentException("No existe un libro con ese ISBN");
+		}
 	}
 	
 	
