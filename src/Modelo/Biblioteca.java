@@ -207,6 +207,73 @@ public class Biblioteca {
 		}
 	}
 	
+	public void renovarLibro(String isbn, String nombreUsuario) {
+		Libro libro = libros.buscarLibro(isbn); 
+		if ( libro != null) {
+			 
+				int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+				if (resultadoUsuario != -1) {
+					Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+					Prestamo prestamo = usuario.buscarPrestamo(libro);
+					if (prestamo != null) {
+						prestamo.renovar();
+						gestor.guardarPrestamos();
+					}
+					else {
+						 throw new IllegalArgumentException("El Usuario no tiene ningun Prestamo con ese libro");
+					}
+					
+				}
+				else {
+					throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
+				}
+			
+		}
+		else {
+			throw new IllegalArgumentException("No existe un libro con ese ISBN");
+		}
+	}
+	
+	public void reservarLibro(String isbn, String nombreUsuario) {
+		Libro libro = libros.buscarLibro(isbn);
+		if (libro != null) {
+			
+			int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+			if (resultadoUsuario != -1) {
+				Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+				if (libro.getCopiasDisponibles() == 0) {
+					if (usuario.getPrestamos().getTamanio() < 3) {
+						if (usuario.buscarPrestamo(libro) == null) {
+							if (!libro.listarReservas().contains(usuario)) {
+	                            libro.agregarReservas(usuario);
+	                            gestor.guardarReservas();
+	                        } else {
+	                            throw new IllegalArgumentException("El usuario ya está en la fila de este libro");
+	                        }
+						}
+						else {
+							throw new IllegalArgumentException("El usuario ya tiene un prestamos de este libro");
+						}
+					}
+					else {
+						throw new IllegalArgumentException("El Usuario ya tiene no tiene prestamos disponibles");
+					}
+				}
+				else {
+					throw new IllegalArgumentException("El libro tiene copias disponibles");
+				}
+				
+			}
+			else {
+				throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
+			}
+			
+		}
+		else {
+			throw new IllegalArgumentException("No existe un libro con ese ISBN");
+		}
+		
+	}
 	
 }
  
