@@ -68,7 +68,7 @@ public class Usuario extends Persona{
 		
 	}
 	
-	public ListaSimple<Prestamo> getPretamos(){
+	public ListaSimple<Prestamo> getPrestamos(){
 		return prestamos;
 	}
 	

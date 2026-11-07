@@ -11,11 +11,9 @@ public abstract class Persona  {
 	private String apellido;
 	private String usuario;
 	private String contrasena;
-	private boolean yaEsHash;
 
 	
 	public Persona(String nombre, String apellido, String usuario, String contrasena, boolean yaEsHash) {
-		this.yaEsHash = false;
 		setNombre(nombre);
 		setApellido(apellido);
 		setUsuario(usuario);
@@ -33,7 +31,7 @@ public abstract class Persona  {
 
 
 	private void setNombre(String nombre) {
-		if (nombre!= null && !nombre.strip().isEmpty()) {
+		if (nombre!= null && !nombre.strip().isEmpty() && !nombre.contains(",")) {
 			this.nombre = nombre;
 		}
 		else {
@@ -50,8 +48,8 @@ public abstract class Persona  {
 
 
 
-	public void setApellido(String apellido) {
-		if (apellido!= null && !apellido.strip().isEmpty()) {
+	private void setApellido(String apellido) {
+		if (apellido!= null && !apellido.strip().isEmpty() && !apellido.contains(",")) {
 			this.apellido = apellido;
 		}
 		else {
@@ -65,8 +63,8 @@ public abstract class Persona  {
 
 
 
-	public void setUsuario(String usuario) {
-		if (usuario != null && !usuario.strip().isEmpty()) {
+	private void setUsuario(String usuario) {
+		if (usuario != null && !usuario.strip().isEmpty() && !usuario.contains(",")) {
 			this.usuario = usuario;
 		}
 		else {
@@ -77,7 +75,7 @@ public abstract class Persona  {
 
 
 	public boolean compararContrasena(String contrasenaIngresada) {
-		if (contrasenaIngresada == null || contrasenaIngresada.strip().isEmpty()) {
+		if (contrasenaIngresada == null || contrasenaIngresada.strip().isEmpty() ) {
 			return false;
 		}
 		else if (contrasena.equals(conversorHash(contrasenaIngresada))) {
@@ -96,7 +94,6 @@ public abstract class Persona  {
 			}
 			else {
 				this.contrasena = conversorHash(contrasena);
-				yaEsHash = false;
 			}
 			
 		}
@@ -113,9 +110,9 @@ public abstract class Persona  {
 
 
 	private void verificarInvariante() {
-		assert nombre != null && !nombre.strip().isEmpty(): "El nombre no debe estar vacio";
-		assert apellido!= null && !apellido.strip().isEmpty(): "El apellido no debe estar vacio";
-		assert usuario != null && !usuario.strip().isEmpty(): "El usuario no debe estar vacio";
+		assert nombre != null && !nombre.strip().isEmpty() && !nombre.contains(","): "El nombre no debe estar vacio";
+		assert apellido!= null && !apellido.strip().isEmpty() && !apellido.contains(","): "El apellido no debe estar vacio";
+		assert usuario != null && !usuario.strip().isEmpty() && !usuario.contains(","): "El usuario no debe estar vacio";
 		assert contrasena != null && !contrasena.strip().isEmpty(): "La contraseña no debe estar vacia";
 		
 	}

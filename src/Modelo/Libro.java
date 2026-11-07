@@ -33,7 +33,7 @@ public class Libro {
 	}
 
 	public void setNombre(String nombre) {
-		if (nombre != null && !nombre.strip().isEmpty() ) {
+		if (nombre != null && !nombre.strip().isEmpty()  && !nombre.contains(",")) {
 			this.nombre = nombre;
 		}
 		else {
@@ -48,7 +48,7 @@ public class Libro {
 
 	public void setAutor(String autor) {
 		
-		if (autor != null && !autor.strip().isEmpty())
+		if (autor != null && !autor.strip().isEmpty() && !autor.contains(","))
 			this.autor = autor;
 		else {
 			throw new IllegalArgumentException("Autor invalido: " +autor);
@@ -99,7 +99,7 @@ public class Libro {
 	
 
 	private void setIsbn(String isbn) {
-		if (isbn == null || isbn.strip().isEmpty()) {
+		if (isbn == null || isbn.strip().isEmpty() && isbn.contains(",")) {
 			throw new IllegalArgumentException("Isbn invalido: "+ isbn);
 		}
 		else {
@@ -150,12 +150,12 @@ public class Libro {
 
 	private void verificarInvariante()
 	{
-		assert nombre != null && !nombre.trim().isEmpty() : "El nombre no puede ser nulo ni estar vacio";
+		assert nombre != null && !nombre.trim().isEmpty() && !nombre.contains(",") : "El nombre no puede ser nulo ni estar vacio";
 		assert copiasTotales > 0  : "Las copias totales no pueden ser menores que 0";
 		assert copiasTotales >= cantidadPrestamos : "Las copias totales no pueden ser menores que las copias disponibles";
-		assert isbn != null && !isbn.trim().isEmpty() : "El codigo Isbn no puede ser nulo ni estar vacio";
-		assert autor != null && !autor.strip().isEmpty(): "El autor no puede ser nulo ni estar vacio"; 
-		assert cantidadPrestamos <= copiasTotales: "La cantidad d epretsamod debe ser menor o igual que las copias totales";
+		assert isbn != null && !isbn.trim().isEmpty()  && !isbn.contains(","): "El codigo Isbn no puede ser nulo ni estar vacio";
+		assert autor != null && !autor.strip().isEmpty() && !autor.contains(","): "El autor no puede ser nulo ni estar vacio"; 
+		assert cantidadPrestamos <= copiasTotales: "La cantidad de pretsamos debe ser menor o igual que las copias totales";
 }
 }
 

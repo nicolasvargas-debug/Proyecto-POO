@@ -19,7 +19,7 @@ public class Administrador extends Persona {
 
 
 	private void setCargo(String cargo) {
-		if (cargo != null && !cargo.strip().isEmpty()) {
+		if (cargo != null && !cargo.strip().isEmpty() && !cargo.contains(",")) {
 			this.cargo = cargo;
 		}
 		else {
@@ -35,6 +35,6 @@ public class Administrador extends Persona {
 	}
 	
 	private void verificarInvariante() {
-		assert cargo != null && !cargo.strip().isEmpty(): "El cargo no puede ser nulo ni estar vacio";
+		assert cargo != null && !cargo.strip().isEmpty() && !cargo.contains(","): "El cargo no puede ser nulo ni estar vacio";
 	}
 }

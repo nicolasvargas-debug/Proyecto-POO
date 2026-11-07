@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,15 +100,31 @@ public class GestorArchivos {
 				String[] partes = linea.split(SEPARADOR);
 				if (partes.length == 4) {
 					Libro libro = arbolBinario.buscarLibro(partes[0]);
-					Usuario usuario = buscarUsuario(partes[1]);
-					Prestamo prestamo = new Prestamo( libro  , usuario  , Boolean.parseBoolean(partes[2]), LocalDate.parse(partes[3])) ;
-					usuario.getPretamos().agregar(prestamo);
-					libro.prestarLibro();
+					if (libro != null ) {
+						Usuario usuario = buscarUsuario(partes[1]);
+						if ( usuario != null) {
+							Prestamo prestamo = new Prestamo( libro  , usuario  , Boolean.parseBoolean(partes[2]), LocalDate.parse(partes[3])) ;
+							usuario.getPrestamos().agregar(prestamo);
+							libro.prestarLibro();
+						}
+						else {
+							throw new IllegalArgumentException("El usuario no se encontro " + partes[1] );
+						}
+							
+					}
+					else {
+						throw new IllegalArgumentException("El libro no se encontro " + partes[0] );
+					}
+					
+					
 				}
 			}
 		}
 		catch (IOException e) {
 			throw new IllegalArgumentException("Error al cargar Prestamos " + RUTA_PRESTAMOS);
+		}
+		catch ( DateTimeException e) {
+			throw new IllegalArgumentException("Error con la fecha " + e);
 		}
 	}
 	
@@ -142,7 +159,7 @@ public class GestorArchivos {
 	public void guardarPrestamos( ) {
 		try (BufferedWriter escritor = new BufferedWriter(new FileWriter(RUTA_PRESTAMOS))){
 			for (Usuario usuario : usuarios) {
-				Nodo<Prestamo> actual = usuario.getPretamos().getInicio(); 
+				Nodo<Prestamo> actual = usuario.getPrestamos().getInicio(); 
 				while (actual != null  ){
 					Prestamo prestamo = actual.getContenido();
 					String linea = prestamo.getLibro().getIsbn() + SEPARADOR + usuario.getUsuario() + SEPARADOR + prestamo.isRenovado() + SEPARADOR + prestamo.getFechaInicio() ;
@@ -230,12 +247,3 @@ public class GestorArchivos {
 	
 
 }
-	
-	
-	
-	
-	
-	
-	
-	
-
