@@ -157,6 +157,56 @@ public class Biblioteca {
 		}
 	}
 	
+	public void devolverLibro(String isbn, String nombreUsuario) {
+		Libro libro = libros.buscarLibro(isbn); 
+		if ( libro != null) {
+			int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+			if (resultadoUsuario != -1) {
+				Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+				if (usuario.buscarPrestamo(libro) != null) {
+					usuario.getPrestamos().eliminar(usuario.buscarPrestamo(libro));
+					if (libro.tieneReserva()) {
+						int cantidad = libro.listarReservas().size();
+						boolean entregado = false;
+						for (int i = 0; i < cantidad; i++) {
+							Usuario usuarioSiguiente = libro.siguienteReserva();
+							try {
+								Prestamo pretamoSiguiente= new Prestamo(libro, usuarioSiguiente); 
+								usuarioSiguiente.agregarPrestamo(pretamoSiguiente);
+								entregado = true;
+								break;
+							}
+							catch (Exception e) {
+								libro.agregarReservas(usuarioSiguiente);
+							}
+							
+							}
+						if (!entregado) {                               
+	                        libro.devolverLibro();
+	                    }
+						
+						}
+					else {
+						libro.devolverLibro();
+						
+					}
+					gestor.guardarPrestamos();
+					gestor.guardarReservas();
+				}
+				else {
+					throw new IllegalArgumentException("El Usuario no tiene ningun Prestamo con ese libro");
+				}
+				
+			}
+			else {
+				throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
+			}
+		}
+		else {
+			throw new IllegalArgumentException("No existe un libro con ese ISBN");
+		}
+	}
+	
 	
 }
  
