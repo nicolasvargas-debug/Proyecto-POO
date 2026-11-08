@@ -143,6 +143,7 @@ public class Libro {
 		return lista;
 	}
 	
+	//recorrido pro 
 	public void quitarReserva(Usuario u) {
 	    int cantidad = reservas.getTamanio();
 	    for (int i = 0; i < cantidad; i++) {

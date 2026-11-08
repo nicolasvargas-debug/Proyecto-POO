@@ -1,5 +1,6 @@
 package Modelo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Biblioteca {
@@ -130,7 +131,7 @@ public class Biblioteca {
 		 }
 	}
 	
-	public void prestarLibro(String isbn, String nombreUsuario) {
+	public boolean prestarLibro(String isbn, String nombreUsuario) {
 		Libro libro = libros.buscarLibro(isbn); 
 		if ( libro != null) {
 			int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
@@ -144,6 +145,7 @@ public class Biblioteca {
 					usuario.agregarPrestamo(prestamo);
 					libro.prestarLibro();
 					gestor.guardarPrestamos();
+					return true;
 				}
 				else {
 					throw new IllegalArgumentException("El libro no tiene copias disponibles");
@@ -159,7 +161,7 @@ public class Biblioteca {
 		}
 	}
 	
-	public void devolverLibro(String isbn, String nombreUsuario) {
+	public boolean devolverLibro(String isbn, String nombreUsuario) {
 		Libro libro = libros.buscarLibro(isbn); 
 		if ( libro != null) {
 			int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
@@ -195,6 +197,7 @@ public class Biblioteca {
 					}
 					gestor.guardarPrestamos();
 					gestor.guardarReservas();
+					return true;
 				}
 				else {
 					throw new IllegalArgumentException("El Usuario no tiene ningun Prestamo con ese libro");
@@ -210,7 +213,7 @@ public class Biblioteca {
 		}
 	}
 	
-	public void renovarLibro(String isbn, String nombreUsuario) {
+	public boolean renovarLibro(String isbn, String nombreUsuario) {
 		Libro libro = libros.buscarLibro(isbn); 
 		if ( libro != null) {
 			 
@@ -224,6 +227,7 @@ public class Biblioteca {
 					if (prestamo != null) {
 						prestamo.renovar();
 						gestor.guardarPrestamos();
+						return true;
 					}
 					else {
 						 throw new IllegalArgumentException("El Usuario no tiene ningun Prestamo con ese libro");
@@ -240,7 +244,7 @@ public class Biblioteca {
 		}
 	}
 	
-	public void reservarLibro(String isbn, String nombreUsuario) {
+	public boolean reservarLibro(String isbn, String nombreUsuario) {
 	    Libro libro = libros.buscarLibro(isbn);
 	    if (libro != null) {
 	        int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
@@ -254,6 +258,7 @@ public class Biblioteca {
 	                    if (!libro.getReservas().contains(usuario)) {
 	                        libro.agregarReservas(usuario);   // lanza si todavía hay copias
 	                        gestor.guardarReservas();
+	                        return true;
 	                    } else {
 	                        throw new IllegalArgumentException("El usuario ya está en la fila de este libro");
 	                    }
@@ -335,6 +340,107 @@ public class Biblioteca {
 		}
 	}
 	
+	public boolean desbloquearUsuario (String nombreUsuario) {
+		int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+		if (resultadoUsuario != -1) {
+			Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+			if (usuario.isBloqueado()) {
+				usuario.desbloquear();
+				gestor.guardarUsuarios();
+				return true;
+			}
+			else {
+				throw new IllegalArgumentException("El usuario no esta bloqueado");
+			}
+		}
+		else {
+			throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
+		}
+	
+	}
+	
+	public boolean eliminarUsuario(String nombreUsuario) {
+		int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+		if (resultadoUsuario == -1) {
+			throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
+		}
+		Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+		if (!usuario.getPrestamos().estaVacia()) {
+			throw new IllegalArgumentException("No se puede eliminar un usuario con prestamos");
+		}
+		for (Libro libro : libros.getLibros()) {
+			libro.quitarReserva(usuario);
+		}
+		gestor.getUsuarios().remove(usuario);
+		gestor.guardarUsuarios();
+		gestor.guardarReservas();
+		return true;
+	}
+	
+	public boolean actualizarUsuario(String nombreUsuario, String nombre, String apellido, String contrasena) {
+		int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario) ; 
+		if (resultadoUsuario == -1) {
+			throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
+		 }
+		Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+		usuario.actualizar(nombre, apellido, contrasena);
+		gestor.guardarUsuarios();
+		return true;
+	}
+	
+	public boolean actualizarAdministrador(String nombreUsuario,  String nombre, String apellido, String contrasena, String cargo) {
+		int resultadoAdministrador = buscarBinario(gestor.getAdministradores(), nombreUsuario) ; 
+		if (resultadoAdministrador == -1) {
+			throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
+		 }
+		Administrador administrador = gestor.getAdministradores().get(resultadoAdministrador);
+		administrador.actualizar(nombre, apellido, contrasena, cargo);
+		gestor.guardarAdministradores();
+		return true;
+	}
+	
+	public List<Libro> listarLibros(){
+		return new ArrayList<Libro>(libros.getLibros());
+		
+	}
+	
+	public List<Usuario> listarUsuarios(){
+		return new ArrayList<Usuario>(gestor.getUsuarios());
+	}
+	
+	public List<Administrador> listarAdministradores(){
+		return new ArrayList<Administrador>(gestor.getAdministradores());
+	}
+	
+	public List<Prestamo> prestamoDe(String nombreUsuario){
+		int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+		if (resultadoUsuario == -1) {
+			throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
+		 }
+		Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+		List<Prestamo> lista = new ArrayList<Prestamo>();
+		Nodo<Prestamo> actual = usuario.getPrestamos().getInicio();
+		while(actual != null){
+			lista.add(actual.getContenido());
+			actual = actual.getSiguiente();
+		}
+		return lista;
+	}
+	
+	public List<Libro> reservasDe(String nombreUsuario) {
+	    int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+	    if (resultadoUsuario == -1) {
+	        throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
+	    }
+	    Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+	    List<Libro> lista = new ArrayList<Libro>();
+	    for (Libro libro : libros.getLibros()) {
+	        if (libro.getReservas().contains(usuario)) {                
+	            lista.add(libro);
+	        }
+	    }
+	    return lista;
+	}
 	
 	
 }

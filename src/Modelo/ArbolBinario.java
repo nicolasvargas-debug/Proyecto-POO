@@ -125,23 +125,35 @@ public class ArbolBinario {
 		if (buscado == null) {
 			return null;
 		}
-		buscado.setCopiasTotales(copiasTotales);
-		buscado.setAutor(autor);
-		buscado.setNombre(nombre);
+		int copiasViejas = buscado.getCopiasTotales();
+		String autorViejo = buscado.getAutor();
+	    String nombreViejo = buscado.getNombre();
+	    try {
+	    	buscado.setCopiasTotales(copiasTotales);
+			buscado.setAutor(autor);
+			buscado.setNombre(nombre);
+	    }
+	    catch (IllegalArgumentException e) {
+	    	buscado.setCopiasTotales(copiasViejas);
+			buscado.setAutor(autorViejo);
+			buscado.setNombre(nombreViejo);
+			throw e;
+		}
+		
 		return buscado;
 	}
 	
 	public List<Libro> getLibros(){
 		List<Libro> lista = new ArrayList<>() ;
-		preOrden(raiz, lista);
+		inOrden(raiz, lista);
 		return lista;
 	}
 	
-	private void preOrden(NodoArbol actual, List<Libro> libros) {
+	private void inOrden(NodoArbol actual, List<Libro> libros) {
 		if (actual != null) {
-			libros.add(actual.getContenido());
-			preOrden(actual.getIzquierdo(), libros);
-			preOrden(actual.getDerecho(), libros);;
+			inOrden(actual.getIzquierdo(), libros);   
+	        libros.add(actual.getContenido());         
+	        inOrden(actual.getDerecho(), libros);
 		}
 		
 		
