@@ -5,18 +5,18 @@ import java.util.List;
 
 public class Biblioteca {
 	private ArbolBinario libros;
-	private GestorArchivos gestor;
+	private GestorArchivos gestorArchivos;
 	
 	public Biblioteca() {
 		libros = new ArbolBinario();
-		gestor = new GestorArchivos(libros);
-		gestor.cargarLibros();
-		gestor.cargarAdministradores();
-		gestor.cargarUsuarios();
-		gestor.cargarPrestamos();
-		gestor.cargarReservas();
-		ordenarPorUsuario(gestor.getUsuarios());
-		ordenarPorUsuario(gestor.getAdministradores());
+		gestorArchivos = new GestorArchivos(libros);
+		gestorArchivos.cargarLibros();
+		gestorArchivos.cargarAdministradores();
+		gestorArchivos.cargarUsuarios();
+		gestorArchivos.cargarPrestamos();
+		gestorArchivos.cargarReservas();
+		ordenarPorUsuario(gestorArchivos.getUsuarios());
+		ordenarPorUsuario(gestorArchivos.getAdministradores());
 		
 		
 		administradorPredeterminado();
@@ -26,30 +26,30 @@ public class Biblioteca {
 	
 	
 	public void administradorPredeterminado(){
-		if (gestor.getAdministradores().isEmpty()) {
+		if (gestorArchivos.getAdministradores().isEmpty()) {
 			Administrador administrador = new Administrador("Nicolas", "Vargas", "Administrador1", "contraseña", false, "Administrador Principal");
-			gestor.getAdministradores().add(administrador);
-			gestor.guardarAdministradores();
+			gestorArchivos.getAdministradores().add(administrador);
+			gestorArchivos.guardarAdministradores();
 		}
 	}
 	
 	public boolean registrarUsuario(String nombre, String apellido, String usuario, String contrasena) {
-		if ( buscarBinario(gestor.getAdministradores(), usuario) == -1  && buscarBinario(gestor.getUsuarios(), usuario)  == -1) {
+		if ( buscarBinario(gestorArchivos.getAdministradores(), usuario) == -1  && buscarBinario(gestorArchivos.getUsuarios(), usuario)  == -1) {
 			Usuario nuevoUsuario = new Usuario(nombre, apellido, usuario, contrasena, false, false);
-			gestor.getUsuarios().add(nuevoUsuario);
-			ordenarPorUsuario(gestor.getUsuarios());
-			gestor.guardarUsuarios();
+			gestorArchivos.getUsuarios().add(nuevoUsuario);
+			ordenarPorUsuario(gestorArchivos.getUsuarios());
+			gestorArchivos.guardarUsuarios();
 			return true;
 		}
 		throw new IllegalArgumentException("El Usuario tiene un usuario que ya existe");
 	}
 	
 	public boolean registrarAdministrador(String nombre, String apellido, String usuario, String contrasena, String cargo) {
-		if ( buscarBinario(gestor.getAdministradores(), usuario) == -1  && buscarBinario(gestor.getUsuarios(), usuario)  == -1) {
+		if ( buscarBinario(gestorArchivos.getAdministradores(), usuario) == -1  && buscarBinario(gestorArchivos.getUsuarios(), usuario)  == -1) {
 			Administrador administrador = new Administrador(nombre, apellido, usuario, contrasena, false, cargo);
-			gestor.getAdministradores().add(administrador);
-			ordenarPorUsuario(gestor.getAdministradores());
-			gestor.guardarAdministradores();
+			gestorArchivos.getAdministradores().add(administrador);
+			ordenarPorUsuario(gestorArchivos.getAdministradores());
+			gestorArchivos.guardarAdministradores();
 			return true;
 				
 			}
@@ -60,7 +60,7 @@ public class Biblioteca {
 	 
 			Libro libro = new Libro(isbn, nombre, autor, copiasTotales);
 			libros.insertarLibro(libro);
-			gestor.guardarLibros();
+			gestorArchivos.guardarLibros();
 			return true;
 		
 	}
@@ -102,10 +102,10 @@ public class Biblioteca {
 	
 	
 	public Persona validarLogin(String nombreUsuario, String contrasena){
-		int resultadoAdministradores = buscarBinario(gestor.getAdministradores(), nombreUsuario);
-		int resultadoUsuarios = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+		int resultadoAdministradores = buscarBinario(gestorArchivos.getAdministradores(), nombreUsuario);
+		int resultadoUsuarios = buscarBinario(gestorArchivos.getUsuarios(), nombreUsuario);
 		 if (resultadoAdministradores != -1) {
-			 Administrador adminstrador = gestor.getAdministradores().get(resultadoAdministradores);
+			 Administrador adminstrador = gestorArchivos.getAdministradores().get(resultadoAdministradores);
 			 if (adminstrador.compararContrasena(contrasena)) {
 				 return adminstrador;
 			 }
@@ -115,7 +115,7 @@ public class Biblioteca {
 			 
 		 }
 		 else if (resultadoUsuarios != -1) {
-			 Usuario usuario = gestor.getUsuarios().get(resultadoUsuarios);
+			 Usuario usuario = gestorArchivos.getUsuarios().get(resultadoUsuarios);
 			 if (usuario.compararContrasena(contrasena)) {
 				 if (usuario.isBloqueado()) {
 					    throw new IllegalArgumentException("El usuario esta bloqueado");
@@ -134,9 +134,9 @@ public class Biblioteca {
 	public boolean prestarLibro(String isbn, String nombreUsuario) {
 		Libro libro = libros.buscarLibro(isbn); 
 		if ( libro != null) {
-			int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+			int resultadoUsuario = buscarBinario(gestorArchivos.getUsuarios(), nombreUsuario);
 			if (resultadoUsuario != -1) {
-				Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+				Usuario usuario = gestorArchivos.getUsuarios().get(resultadoUsuario);
 				Prestamo prestamo = new Prestamo(libro, usuario);
 				if (usuario.getPrestamos().getTamanio() + contarReservas(usuario) >= 3) {
 				    throw new IllegalArgumentException("El usuario ya tiene 3 entre prestamos y reservas");
@@ -144,7 +144,7 @@ public class Biblioteca {
 				if (libro.getCopiasDisponibles() > 0) {
 					usuario.agregarPrestamo(prestamo);
 					libro.prestarLibro();
-					gestor.guardarPrestamos();
+					gestorArchivos.guardarPrestamos();
 					return true;
 				}
 				else {
@@ -164,9 +164,9 @@ public class Biblioteca {
 	public boolean devolverLibro(String isbn, String nombreUsuario) {
 		Libro libro = libros.buscarLibro(isbn); 
 		if ( libro != null) {
-			int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+			int resultadoUsuario = buscarBinario(gestorArchivos.getUsuarios(), nombreUsuario);
 			if (resultadoUsuario != -1) {
-				Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+				Usuario usuario = gestorArchivos.getUsuarios().get(resultadoUsuario);
 				if (usuario.buscarPrestamo(libro) != null) {
 					usuario.getPrestamos().eliminar(usuario.buscarPrestamo(libro));
 					if (libro.tieneReserva()) {
@@ -195,8 +195,8 @@ public class Biblioteca {
 						libro.devolverLibro();
 						
 					}
-					gestor.guardarPrestamos();
-					gestor.guardarReservas();
+					gestorArchivos.guardarPrestamos();
+					gestorArchivos.guardarReservas();
 					return true;
 				}
 				else {
@@ -217,16 +217,16 @@ public class Biblioteca {
 		Libro libro = libros.buscarLibro(isbn); 
 		if ( libro != null) {
 			 
-				int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+				int resultadoUsuario = buscarBinario(gestorArchivos.getUsuarios(), nombreUsuario);
 				if (resultadoUsuario != -1) {
-					Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+					Usuario usuario = gestorArchivos.getUsuarios().get(resultadoUsuario);
 					if (usuario.isBloqueado()) {
 					    throw new IllegalArgumentException("El usuario esta bloqueado");
 					}
 					Prestamo prestamo = usuario.buscarPrestamo(libro);
 					if (prestamo != null) {
 						prestamo.renovar();
-						gestor.guardarPrestamos();
+						gestorArchivos.guardarPrestamos();
 						return true;
 					}
 					else {
@@ -247,9 +247,9 @@ public class Biblioteca {
 	public boolean reservarLibro(String isbn, String nombreUsuario) {
 	    Libro libro = libros.buscarLibro(isbn);
 	    if (libro != null) {
-	        int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+	        int resultadoUsuario = buscarBinario(gestorArchivos.getUsuarios(), nombreUsuario);
 	        if (resultadoUsuario != -1) {
-	            Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+	            Usuario usuario = gestorArchivos.getUsuarios().get(resultadoUsuario);
 	            if (usuario.isBloqueado()) {
 	                throw new IllegalArgumentException("El usuario esta bloqueado");
 	            }
@@ -257,7 +257,7 @@ public class Biblioteca {
 	                if (usuario.buscarPrestamo(libro) == null) {
 	                    if (!libro.getReservas().contains(usuario)) {
 	                        libro.agregarReservas(usuario);   // lanza si todavía hay copias
-	                        gestor.guardarReservas();
+	                        gestorArchivos.guardarReservas();
 	                        return true;
 	                    } else {
 	                        throw new IllegalArgumentException("El usuario ya está en la fila de este libro");
@@ -282,7 +282,8 @@ public class Biblioteca {
 			if (!libro.tieneReserva()) {
 				if (libro.getCopiasTotales() == libro.getCopiasDisponibles()) {
 					libros.eliminarLibro(isbn);
-					gestor.guardarLibros();
+					gestorArchivos.guardarLibros();
+					GestorFotos.eliminar(GestorFotos.LIBROS, isbn);
 					return true;
 				}
 				else {
@@ -300,7 +301,7 @@ public class Biblioteca {
 	public boolean actualizarLibro( String ISBN, String nombre, String autor, int copiasTotales) {
 		Libro libro = libros.actualizarLibro(ISBN, nombre, autor, copiasTotales);
 		if (libro != null) {
-			gestor.guardarLibros();
+			gestorArchivos.guardarLibros();
 			return true;
 		}
 		else {
@@ -319,16 +320,16 @@ public class Biblioteca {
 	}
 	
 	public boolean bloquearUsuario(String nombreUsuario) {
-		int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+		int resultadoUsuario = buscarBinario(gestorArchivos.getUsuarios(), nombreUsuario);
 		if (resultadoUsuario != -1) {
-			Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+			Usuario usuario = gestorArchivos.getUsuarios().get(resultadoUsuario);
 			if (!usuario.isBloqueado()) {
 				usuario.bloquear();
 				for (Libro libro : libros.getLibros()) {
 					libro.quitarReserva(usuario);
 				}
-				gestor.guardarUsuarios();
-				gestor.guardarReservas();
+				gestorArchivos.guardarUsuarios();
+				gestorArchivos.guardarReservas();
 				return true;
 			}
 			else {
@@ -341,12 +342,12 @@ public class Biblioteca {
 	}
 	
 	public boolean desbloquearUsuario (String nombreUsuario) {
-		int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+		int resultadoUsuario = buscarBinario(gestorArchivos.getUsuarios(), nombreUsuario);
 		if (resultadoUsuario != -1) {
-			Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+			Usuario usuario = gestorArchivos.getUsuarios().get(resultadoUsuario);
 			if (usuario.isBloqueado()) {
 				usuario.desbloquear();
-				gestor.guardarUsuarios();
+				gestorArchivos.guardarUsuarios();
 				return true;
 			}
 			else {
@@ -360,42 +361,58 @@ public class Biblioteca {
 	}
 	
 	public boolean eliminarUsuario(String nombreUsuario) {
-		int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+		int resultadoUsuario = buscarBinario(gestorArchivos.getUsuarios(), nombreUsuario);
 		if (resultadoUsuario == -1) {
 			throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
 		}
-		Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+		Usuario usuario = gestorArchivos.getUsuarios().get(resultadoUsuario);
 		if (!usuario.getPrestamos().estaVacia()) {
 			throw new IllegalArgumentException("No se puede eliminar un usuario con prestamos");
 		}
 		for (Libro libro : libros.getLibros()) {
 			libro.quitarReserva(usuario);
 		}
-		gestor.getUsuarios().remove(usuario);
-		gestor.guardarUsuarios();
-		gestor.guardarReservas();
+		gestorArchivos.getUsuarios().remove(usuario);
+		gestorArchivos.guardarUsuarios();
+		gestorArchivos.guardarReservas();
+		GestorFotos.eliminar(GestorFotos.USUARIOS, nombreUsuario);
 		return true;
 	}
 	
+	public boolean eliminarAdministrador(String nombreUsuario) {
+		int resultadoAdministrador = buscarBinario(gestorArchivos.getAdministradores(), nombreUsuario);
+		if (resultadoAdministrador == -1) {
+			throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
+		}
+		if (gestorArchivos.getAdministradores().size() == 1) {
+			throw new IllegalArgumentException("No se puede eliminar al ultimo administrador");
+		}
+		gestorArchivos.getAdministradores().remove(resultadoAdministrador);
+		gestorArchivos.guardarAdministradores();
+		GestorFotos.eliminar(GestorFotos.ADMINISTRADORES, nombreUsuario);
+		return true;
+	}
+	
+	
 	public boolean actualizarUsuario(String nombreUsuario, String nombre, String apellido, String contrasena) {
-		int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario) ; 
+		int resultadoUsuario = buscarBinario(gestorArchivos.getUsuarios(), nombreUsuario) ; 
 		if (resultadoUsuario == -1) {
 			throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
 		 }
-		Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+		Usuario usuario = gestorArchivos.getUsuarios().get(resultadoUsuario);
 		usuario.actualizar(nombre, apellido, contrasena);
-		gestor.guardarUsuarios();
+		gestorArchivos.guardarUsuarios();
 		return true;
 	}
 	
 	public boolean actualizarAdministrador(String nombreUsuario,  String nombre, String apellido, String contrasena, String cargo) {
-		int resultadoAdministrador = buscarBinario(gestor.getAdministradores(), nombreUsuario) ; 
+		int resultadoAdministrador = buscarBinario(gestorArchivos.getAdministradores(), nombreUsuario) ; 
 		if (resultadoAdministrador == -1) {
 			throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
 		 }
-		Administrador administrador = gestor.getAdministradores().get(resultadoAdministrador);
+		Administrador administrador = gestorArchivos.getAdministradores().get(resultadoAdministrador);
 		administrador.actualizar(nombre, apellido, contrasena, cargo);
-		gestor.guardarAdministradores();
+		gestorArchivos.guardarAdministradores();
 		return true;
 	}
 	
@@ -405,19 +422,19 @@ public class Biblioteca {
 	}
 	
 	public List<Usuario> listarUsuarios(){
-		return new ArrayList<Usuario>(gestor.getUsuarios());
+		return new ArrayList<Usuario>(gestorArchivos.getUsuarios());
 	}
 	
 	public List<Administrador> listarAdministradores(){
-		return new ArrayList<Administrador>(gestor.getAdministradores());
+		return new ArrayList<Administrador>(gestorArchivos.getAdministradores());
 	}
 	
 	public List<Prestamo> prestamoDe(String nombreUsuario){
-		int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+		int resultadoUsuario = buscarBinario(gestorArchivos.getUsuarios(), nombreUsuario);
 		if (resultadoUsuario == -1) {
 			throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
 		 }
-		Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+		Usuario usuario = gestorArchivos.getUsuarios().get(resultadoUsuario);
 		List<Prestamo> lista = new ArrayList<Prestamo>();
 		Nodo<Prestamo> actual = usuario.getPrestamos().getInicio();
 		while(actual != null){
@@ -428,11 +445,11 @@ public class Biblioteca {
 	}
 	
 	public List<Libro> reservasDe(String nombreUsuario) {
-	    int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+	    int resultadoUsuario = buscarBinario(gestorArchivos.getUsuarios(), nombreUsuario);
 	    if (resultadoUsuario == -1) {
 	        throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
 	    }
-	    Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+	    Usuario usuario = gestorArchivos.getUsuarios().get(resultadoUsuario);
 	    List<Libro> lista = new ArrayList<Libro>();
 	    for (Libro libro : libros.getLibros()) {
 	        if (libro.getReservas().contains(usuario)) {                
