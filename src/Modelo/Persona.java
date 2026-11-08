@@ -30,7 +30,7 @@ public abstract class Persona  {
 
 
 
-	private void setNombre(String nombre) {
+	protected void setNombre(String nombre) {
 		if (nombre!= null && !nombre.strip().isEmpty() && !nombre.contains(",")) {
 			this.nombre = nombre;
 		}
@@ -48,7 +48,7 @@ public abstract class Persona  {
 
 
 
-	private void setApellido(String apellido) {
+	protected void setApellido(String apellido) {
 		if (apellido!= null && !apellido.strip().isEmpty() && !apellido.contains(",")) {
 			this.apellido = apellido;
 		}
@@ -63,7 +63,7 @@ public abstract class Persona  {
 
 
 
-	private void setUsuario(String usuario) {
+	protected void setUsuario(String usuario) {
 		if (usuario != null && !usuario.strip().isEmpty() && !usuario.contains(",")) {
 			this.usuario = usuario;
 		}
@@ -87,7 +87,7 @@ public abstract class Persona  {
 
 
 
-	private void setContrasena(String contrasena, boolean esHash) {
+	protected void setContrasena(String contrasena, boolean esHash) {
 		if (contrasena != null && !contrasena.strip().isEmpty()) {
 			if (esHash) {
 				this.contrasena = contrasena;
@@ -133,6 +133,11 @@ public abstract class Persona  {
 		return contrasena;
 	}
 	
-	public abstract String getRol(); 
+	
+	public abstract String getRol();
+
+
+
+	
 	
 }

@@ -37,4 +37,13 @@ public class Administrador extends Persona {
 	private void verificarInvariante() {
 		assert cargo != null && !cargo.strip().isEmpty() && !cargo.contains(","): "El cargo no puede ser nulo ni estar vacio";
 	}
+	
+	public boolean actualizar( String nombre, String apellido, String contrasena, String cargo) {
+		setNombre(nombre);
+		setApellido(apellido);
+		setContrasena(contrasena, false);
+		setCargo(cargo);
+		return true;
+	}
+	
 }

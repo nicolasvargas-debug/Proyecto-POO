@@ -56,15 +56,11 @@ public class Biblioteca {
 		}
 	
 	public boolean registrarLibro(String isbn, String nombre, String autor, int copiasTotales){
-		if (libros.buscarLibro(isbn) == null) {
+	 
 			Libro libro = new Libro(isbn, nombre, autor, copiasTotales);
 			libros.insertarLibro(libro);
 			gestor.guardarLibros();
 			return true;
-		}
-		else {
-			throw new IllegalArgumentException("El libro ya existe");
-		}
 		
 	}
 	
@@ -120,6 +116,9 @@ public class Biblioteca {
 		 else if (resultadoUsuarios != -1) {
 			 Usuario usuario = gestor.getUsuarios().get(resultadoUsuarios);
 			 if (usuario.compararContrasena(contrasena)) {
+				 if (usuario.isBloqueado()) {
+					    throw new IllegalArgumentException("El usuario esta bloqueado");
+				 }
 				 return usuario;
 			 }
 			 else {
@@ -138,6 +137,9 @@ public class Biblioteca {
 			if (resultadoUsuario != -1) {
 				Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
 				Prestamo prestamo = new Prestamo(libro, usuario);
+				if (usuario.getPrestamos().getTamanio() + contarReservas(usuario) >= 3) {
+				    throw new IllegalArgumentException("El usuario ya tiene 3 entre prestamos y reservas");
+				}
 				if (libro.getCopiasDisponibles() > 0) {
 					usuario.agregarPrestamo(prestamo);
 					libro.prestarLibro();
@@ -166,8 +168,9 @@ public class Biblioteca {
 				if (usuario.buscarPrestamo(libro) != null) {
 					usuario.getPrestamos().eliminar(usuario.buscarPrestamo(libro));
 					if (libro.tieneReserva()) {
-						int cantidad = libro.listarReservas().size();
+						int cantidad = libro.getReservas().size();
 						boolean entregado = false;
+						
 						for (int i = 0; i < cantidad; i++) {
 							Usuario usuarioSiguiente = libro.siguienteReserva();
 							try {
@@ -214,6 +217,9 @@ public class Biblioteca {
 				int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
 				if (resultadoUsuario != -1) {
 					Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+					if (usuario.isBloqueado()) {
+					    throw new IllegalArgumentException("El usuario esta bloqueado");
+					}
 					Prestamo prestamo = usuario.buscarPrestamo(libro);
 					if (prestamo != null) {
 						prestamo.renovar();
@@ -235,45 +241,101 @@ public class Biblioteca {
 	}
 	
 	public void reservarLibro(String isbn, String nombreUsuario) {
-		Libro libro = libros.buscarLibro(isbn);
-		if (libro != null) {
-			
-			int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
-			if (resultadoUsuario != -1) {
-				Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
-				if (libro.getCopiasDisponibles() == 0) {
-					if (usuario.getPrestamos().getTamanio() < 3) {
-						if (usuario.buscarPrestamo(libro) == null) {
-							if (!libro.listarReservas().contains(usuario)) {
-	                            libro.agregarReservas(usuario);
-	                            gestor.guardarReservas();
-	                        } else {
-	                            throw new IllegalArgumentException("El usuario ya está en la fila de este libro");
-	                        }
-						}
-						else {
-							throw new IllegalArgumentException("El usuario ya tiene un prestamos de este libro");
-						}
-					}
-					else {
-						throw new IllegalArgumentException("El Usuario ya tiene no tiene prestamos disponibles");
-					}
+	    Libro libro = libros.buscarLibro(isbn);
+	    if (libro != null) {
+	        int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+	        if (resultadoUsuario != -1) {
+	            Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+	            if (usuario.isBloqueado()) {
+	                throw new IllegalArgumentException("El usuario esta bloqueado");
+	            }
+	            if (usuario.getPrestamos().getTamanio() + contarReservas(usuario) < 3) {
+	                if (usuario.buscarPrestamo(libro) == null) {
+	                    if (!libro.getReservas().contains(usuario)) {
+	                        libro.agregarReservas(usuario);   // lanza si todavía hay copias
+	                        gestor.guardarReservas();
+	                    } else {
+	                        throw new IllegalArgumentException("El usuario ya está en la fila de este libro");
+	                    }
+	                } else {
+	                    throw new IllegalArgumentException("El usuario ya tiene un prestamo de este libro");
+	                }
+	            } else {
+	                throw new IllegalArgumentException("El usuario ya tiene 3 entre prestamos y reservas");
+	            }
+	        } else {
+	            throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
+	        }
+	    } else {
+	        throw new IllegalArgumentException("No existe un libro con ese ISBN");
+	    }
+	}
+	
+	public boolean eliminarLibro(String isbn) {
+		Libro libro = libros.buscarLibro(isbn); 
+		if ( libro != null){
+			if (!libro.tieneReserva()) {
+				if (libro.getCopiasTotales() == libro.getCopiasDisponibles()) {
+					libros.eliminarLibro(isbn);
+					gestor.guardarLibros();
+					return true;
 				}
 				else {
-					throw new IllegalArgumentException("El libro tiene copias disponibles");
+					throw new IllegalArgumentException("El libro no se puede eliminar porque tiene prestamos vigentes ");
 				}
-				
 			}
 			else {
-				throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
+				throw new IllegalArgumentException("El libro no se puede eliminar porque tiene reservas");
 			}
-			
 		}
 		else {
-			throw new IllegalArgumentException("No existe un libro con ese ISBN");
+			throw new IllegalArgumentException("No existe ningun libro con ese ISBN");
 		}
-		
+		}
+	public boolean actualizarLibro( String ISBN, String nombre, String autor, int copiasTotales) {
+		Libro libro = libros.actualizarLibro(ISBN, nombre, autor, copiasTotales);
+		if (libro != null) {
+			gestor.guardarLibros();
+			return true;
+		}
+		else {
+			throw new IllegalArgumentException("No existe ningun libro con ese ISBN");
+		}
 	}
+	
+	private int contarReservas(Usuario usuario) {
+		int numeroReservas = 0;
+		for (Libro libro : libros.getLibros()) {
+			if (libro.getReservas().contains(usuario)) {
+				numeroReservas += 1;
+			}
+		}
+		return numeroReservas;
+	}
+	
+	public boolean bloquearUsuario(String nombreUsuario) {
+		int resultadoUsuario = buscarBinario(gestor.getUsuarios(), nombreUsuario);
+		if (resultadoUsuario != -1) {
+			Usuario usuario = gestor.getUsuarios().get(resultadoUsuario);
+			if (!usuario.isBloqueado()) {
+				usuario.bloquear();
+				for (Libro libro : libros.getLibros()) {
+					libro.quitarReserva(usuario);
+				}
+				gestor.guardarUsuarios();
+				gestor.guardarReservas();
+				return true;
+			}
+			else {
+				throw new IllegalArgumentException("El usuario ya esta bloqueado");
+			}
+		}
+		else {
+			throw new IllegalArgumentException("No existe ninguna Persona con ese Usuario");
+		}
+	}
+	
+	
 	
 }
  

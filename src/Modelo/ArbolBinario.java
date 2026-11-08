@@ -116,10 +116,7 @@ public class ArbolBinario {
 	}
 
 	public Libro actualizarLibro(String isbn ,String nombre, String autor, int copiasTotales) {
-		if (isbn != null && !isbn.strip().isEmpty() && nombre != null && !nombre.strip().isEmpty() && autor != null && !autor.strip().isEmpty() && copiasTotales >0) {
 			return actualizar( isbn, nombre, autor, copiasTotales);
-		}
-		throw new IllegalArgumentException("Los parametros tienen alguna falla");
 
 	}
 
@@ -134,7 +131,7 @@ public class ArbolBinario {
 		return buscado;
 	}
 	
-	public List<Libro> obtenerLibros(){
+	public List<Libro> getLibros(){
 		List<Libro> lista = new ArrayList<>() ;
 		preOrden(raiz, lista);
 		return lista;

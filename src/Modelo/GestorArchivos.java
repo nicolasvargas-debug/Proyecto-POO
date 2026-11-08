@@ -51,7 +51,10 @@ public class GestorArchivos {
 	        }
 	    } catch (IOException e) {
 	        throw new IllegalArgumentException("Error al cargar libros " + RUTA_LIBROS);
-	    }
+	    } catch (NumberFormatException  e) {
+	    	throw new IllegalArgumentException("Error al cargar el entero " +RUTA_LIBROS);
+		}
+	    
 	}
 	
 	
@@ -206,7 +209,7 @@ public class GestorArchivos {
 	
 	public void guardarLibros() {
 			try (BufferedWriter escritor = new BufferedWriter( new FileWriter(RUTA_LIBROS))){
-				for (Libro libro : arbolBinario.obtenerLibros()) {
+				for (Libro libro : arbolBinario.getLibros()) {
 					String linea =  libro.getIsbn() + SEPARADOR + libro.getNombre() + SEPARADOR +   libro.getAutor()  + SEPARADOR +libro.getCopiasTotales() ;
 					escritor.write(linea);
 					escritor.newLine();
@@ -230,8 +233,8 @@ public class GestorArchivos {
 	
 	public void guardarReservas() {
 		try (BufferedWriter escritor = new BufferedWriter( new FileWriter(RUTA_RESERVAS))){
-			for (Libro libro : arbolBinario.obtenerLibros()) {
-				List<Usuario> reservas = libro.listarReservas();
+			for (Libro libro : arbolBinario.getLibros()) {
+				List<Usuario> reservas = libro.getReservas();
 				for (Usuario usuario: reservas) {
 					String linea =  libro.getIsbn() + SEPARADOR + usuario.getUsuario() ;
 					escritor.write(linea);

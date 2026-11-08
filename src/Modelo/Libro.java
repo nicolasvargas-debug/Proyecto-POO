@@ -83,15 +83,8 @@ public class Libro {
 		}
 		
 	}
-	public int getCopiasDisponibles() {
-		 if (  getCopiasTotales() >= getCantidadPrestamos() && getCantidadPrestamos() >= 0 ) {
+	public int getCopiasDisponibles() { 
 				return getCopiasTotales() - getCantidadPrestamos();
-				
-			}
-			else {
-				throw new IllegalArgumentException("Copias Disponibles invalidas" );
-			}
-			
 		}
 	
 	
@@ -99,7 +92,7 @@ public class Libro {
 	
 
 	private void setIsbn(String isbn) {
-		if (isbn == null || isbn.strip().isEmpty() && isbn.contains(",")) {
+		if (isbn == null || isbn.strip().isEmpty() || isbn.contains(",")) {
 			throw new IllegalArgumentException("Isbn invalido: "+ isbn);
 		}
 		else {
@@ -126,6 +119,9 @@ public class Libro {
 		if (u == null) {
 			throw new IllegalArgumentException("El usuario no puede ser nulo");
 		}
+		else if (getReservas().contains(u)) {
+			throw new IllegalArgumentException("El usuario ya tiene una reserva de este libro");
+		}
 		else if (cantidadPrestamos == copiasTotales) {
 			reservas.add(u);
 			return true;
@@ -137,7 +133,7 @@ public class Libro {
 		return reservas.poll();
 	}
 	
-	public List<Usuario> listarReservas(){
+	public List<Usuario> getReservas(){
 		List<Usuario> lista = new ArrayList<Usuario>();
 		Nodo<Usuario> actual = reservas.getInicio();
 		while (actual != null) {
@@ -147,7 +143,16 @@ public class Libro {
 		return lista;
 	}
 	
-
+	public void quitarReserva(Usuario u) {
+	    int cantidad = reservas.getTamanio();
+	    for (int i = 0; i < cantidad; i++) {
+	        Usuario actual = reservas.poll();
+	        if (actual != u) {
+	            reservas.add(actual);
+	        }
+	    }
+	}
+	
 	private void verificarInvariante()
 	{
 		assert nombre != null && !nombre.trim().isEmpty() && !nombre.contains(",") : "El nombre no puede ser nulo ni estar vacio";

@@ -71,6 +71,17 @@ public class Usuario extends Persona{
 	public ListaSimple<Prestamo> getPrestamos(){
 		return prestamos;
 	}
+
+	
+	public boolean actualizar( String nombre, String apellido, String contrasena) {
+		setNombre(nombre);
+		setApellido(apellido);
+		setContrasena(contrasena, false);
+		return true;
+	}
+
+	
+	
 	
 
 	
