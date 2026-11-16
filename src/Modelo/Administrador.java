@@ -1,5 +1,7 @@
 package Modelo;
 
+import Excepciones.*;
+
 public class Administrador extends Persona {
 	private String cargo;
 	public static final String ROL_ADMINISTRADOR = "administrador";
@@ -23,7 +25,7 @@ public class Administrador extends Persona {
 			this.cargo = cargo;
 		}
 		else {
-			throw new IllegalArgumentException("Cargo invalido: " + cargo);
+			throw new CargoInvalido("Cargo invalido: " + cargo);
 		}
 	}
 

@@ -2,16 +2,18 @@ package Interfaz;
 
 import java.awt.BorderLayout;
 
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import InterfazAdm.VentanaAdm;
-import InterfazUsr.VentanaUsr;
-import Loggin.PanelLogin;
+import Modelo.Biblioteca;
+
+
 
 public class Principal extends JFrame {
 	private PanelLogin panelLogin;
 	private JLabel mensaje;
+	private Biblioteca biblioteca;
 	
 	public Principal(){
 		setTitle("Loggin");
@@ -21,9 +23,9 @@ public class Principal extends JFrame {
 		setLocationRelativeTo(null);
 		setLayout(new BorderLayout());
 		setVisible(true);
-		
+		biblioteca = new Biblioteca();
 		mensaje = new JLabel("Ingrese su Usuario y contraseña:");
-		panelLogin = new PanelLogin();
+		panelLogin = new PanelLogin(biblioteca);
 		
 		
 		
@@ -34,9 +36,15 @@ public class Principal extends JFrame {
 		setVisible(true);
 	}
 	public static void main(String[] args) {
-		Principal p = new Principal();
-		VentanaAdm a = new VentanaAdm();
-		VentanaUsr u = new VentanaUsr();
+		 try {
+		        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+		            if ("Nimbus".equals(info.getName())) {
+		                javax.swing.UIManager.setLookAndFeel(info.getClassName());
+		            }
+		        }
+		    } catch (Exception e) {
+		    }
+		    Principal p = new Principal();
 	}
 	 
 	

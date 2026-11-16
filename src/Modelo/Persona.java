@@ -1,5 +1,7 @@
 package Modelo;
 
+import Excepciones.*;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -35,7 +37,7 @@ public abstract class Persona  {
 			this.nombre = nombre;
 		}
 		else {
-			throw new IllegalArgumentException("Nombre invalido: " + nombre);
+			throw new NombreInvalido("Nombre invalido: " + nombre);
 		}
 		
 	}
@@ -53,7 +55,7 @@ public abstract class Persona  {
 			this.apellido = apellido;
 		}
 		else {
-			throw new IllegalArgumentException("Apellido invalido: " + apellido);
+			throw new ApellidoInvalido("Apellido invalido: " + apellido);
 		}
 	}
 
@@ -68,7 +70,7 @@ public abstract class Persona  {
 			this.usuario = usuario;
 		}
 		else {
-			throw new IllegalArgumentException("Usuario invalido: " + usuario);
+			throw new UsuarioInvalido("Usuario invalido: " + usuario);
 		}
 	}
 
@@ -98,7 +100,7 @@ public abstract class Persona  {
 			
 		}
 		else {
-			throw new IllegalArgumentException("Contraseña invalida");
+			throw new ContrasenaInvalida("Contraseña invalida");
 		}
 	}
 	

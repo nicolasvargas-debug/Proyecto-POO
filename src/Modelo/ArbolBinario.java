@@ -1,5 +1,7 @@
 package Modelo;
 
+import Excepciones.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +47,7 @@ public class ArbolBinario {
 			actual.setDerecho(insertar(actual.getDerecho(), libro));
 		}
 		else {
-			throw new IllegalArgumentException("Ya existe un Libro con ese ISBN");
+			throw new LibroYaExiste("Ya existe un Libro con ese ISBN");
 		}
 		return actual;
 	}
@@ -55,7 +57,7 @@ public class ArbolBinario {
 		if (isbn != null && !isbn.strip().isEmpty()) {
 			return busqueda(raiz, isbn);
 		}
-		throw new IllegalArgumentException("El ISBN del libro no puede estar vacio o ser nulo");
+		throw new IsbnInvalido("El ISBN del libro no puede estar vacio o ser nulo");
 	}
 
 	private Libro busqueda(NodoArbol actual, String ISBN) {
@@ -80,7 +82,7 @@ public class ArbolBinario {
 			raiz = eliminar(raiz, isbn);                            // CAMBIO: antes era return eliminar(raiz, isbn);
 			return raiz;
 		}
-		throw new IllegalArgumentException("El ISBN del libro no puede estar vacio o ser nulo");
+		throw new IsbnInvalido("El ISBN del libro no puede estar vacio o ser nulo");
 	}
 
 	private NodoArbol eliminar(NodoArbol actual, String ISBN) {

@@ -1,5 +1,7 @@
 package Modelo;
 
+import Excepciones.*;
+
 public class Usuario extends Persona{
 	private ListaSimple<Prestamo> prestamos; 
 	private boolean bloqueado;
@@ -44,13 +46,13 @@ public class Usuario extends Persona{
 		}
 		
 		if (bloqueado) {
-			throw new IllegalStateException("El usuario esta bloqueado");
+			throw new UsuarioBloqueado("El usuario esta bloqueado");
 		}
 		if (prestamos.getTamanio()>= MAX_PRESTAMOS) {
-			throw new IllegalStateException("El usuario ya alcanzo el maximo de prestamos");
+			throw new LimitePrestamos("El usuario ya alcanzo el maximo de prestamos");
 		}
 		if (buscarPrestamo(p.getLibro()) != null) {
-			throw new IllegalStateException("El usuario ya tiene este libro");
+			throw new PrestamoDuplicado("El usuario ya tiene este libro");
 		}
 		return prestamos.agregar(p);
 		

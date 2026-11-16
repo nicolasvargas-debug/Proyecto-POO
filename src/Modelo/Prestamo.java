@@ -1,5 +1,7 @@
 package Modelo;
 
+import Excepciones.*;
+
 import java.time.LocalDate;
 
 public class Prestamo {
@@ -69,10 +71,10 @@ public class Prestamo {
 	
 	public boolean renovar() {
 		if (renovado) {
-			throw new IllegalStateException("El prestamo ya fue renovado");
+			throw new RenovacionDoble("El prestamo ya fue renovado");
 		}
 		else if (libro.tieneReserva()) {
-			throw new IllegalStateException("El libro tiene reservas, no se puede renovar");
+			throw new RenovacionConFila("El libro tiene reservas, no se puede renovar");
 			
 		}
 		else {

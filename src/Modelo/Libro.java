@@ -1,5 +1,7 @@
 package Modelo;
 
+import Excepciones.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +39,7 @@ public class Libro {
 			this.nombre = nombre;
 		}
 		else {
-			throw new IllegalArgumentException("Nombre invalido: " + nombre);
+			throw new NombreInvalido("Nombre invalido: " + nombre);
 		}
 		
 	}
@@ -51,7 +53,7 @@ public class Libro {
 		if (autor != null && !autor.strip().isEmpty() && !autor.contains(","))
 			this.autor = autor;
 		else {
-			throw new IllegalArgumentException("Autor invalido: " +autor);
+			throw new AutorInvalido("Autor invalido: " +autor);
 		}
 	}
 
@@ -65,7 +67,7 @@ public class Libro {
 			this.cantidadPrestamos = cantidadPrestamos;
 		}
 		else {
-			throw new IllegalArgumentException("La cantidad de prestamos esta mal");
+			throw new CopiasInvalidas("La cantidad de prestamos esta mal");
 		}
 	}
 	
@@ -79,7 +81,7 @@ public class Libro {
 			
 		}
 		else {
-			throw new IllegalArgumentException("Copias Totales invalidas: " + copiasTotales);
+			throw new CopiasInvalidas("Copias Totales invalidas: " + copiasTotales);
 		}
 		
 	}
@@ -93,7 +95,7 @@ public class Libro {
 
 	private void setIsbn(String isbn) {
 		if (isbn == null || isbn.strip().isEmpty() || isbn.contains(",")) {
-			throw new IllegalArgumentException("Isbn invalido: "+ isbn);
+			throw new IsbnInvalido("Isbn invalido: "+ isbn);
 		}
 		else {
 			this.isbn = isbn;
@@ -120,7 +122,7 @@ public class Libro {
 			throw new IllegalArgumentException("El usuario no puede ser nulo");
 		}
 		else if (getReservas().contains(u)) {
-			throw new IllegalArgumentException("El usuario ya tiene una reserva de este libro");
+			throw new ReservaDuplicada("El usuario ya tiene una reserva de este libro");
 		}
 		else if (cantidadPrestamos == copiasTotales) {
 			reservas.add(u);

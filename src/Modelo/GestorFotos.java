@@ -1,4 +1,6 @@
 package Modelo;
+
+import Excepciones.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +21,7 @@ public class GestorFotos {
 	    public static void guardar(File origen, String carpeta, String clave) throws IOException { 
 	    	BufferedImage imagen = ImageIO.read(origen);
 	    	if (imagen == null) {
-	    		throw new IllegalArgumentException("El archivo seleccionado no es una imagen valida");
+	    		throw new FotoInvalida("El archivo seleccionado no es una imagen valida");
 	    	}
 	    	File destino = rutaDe(carpeta, clave);
 	    	ImageIO.write(imagen, "png", destino);
